@@ -3,15 +3,14 @@ import { AnyModel } from "../models/anyModel";
 
 const router = express.Router();
 
-router.put("/api/anymodel", async (req: Request, res: Response) => {
+router.post("/api/anymodel", async (req: Request, res: Response) => {
   const { id, userId, ...otherFields } = req.body;
 
-  // If `id` exists, update the document
   if (id) {
     const updatedDocument = await AnyModel.findByIdAndUpdate(
       id,
       { userId, ...otherFields },
-      { new: true, runValidators: true } // `new: true` returns the updated document
+      { new: true, runValidators: true }
     );
 
     if (!updatedDocument) {
@@ -27,4 +26,4 @@ router.put("/api/anymodel", async (req: Request, res: Response) => {
   }
 });
 
-export { router as anyModelRouter };
+export { router as AnyModelRouter };

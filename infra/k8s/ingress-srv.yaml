@@ -7,20 +7,20 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: mapme.dev
-    http:
-      paths:
-      - pathType: ImplementationSpecific
-        path: "/api/?(.*)"
-        backend:
-          service:
-            name: mapme-backend-srv
-            port: 
-              number: 3000
-      - pathType: Prefix
-        path: "/"
-        backend:
-          service:
-            name: mapme-client-srv
-            port: 
-              number: 3000
+    - host: mapme.dev
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            path: "/api(/|$)(.*)"
+            backend:
+              service:
+                name: mapme-backend-srv
+                port:
+                  number: 3000
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: mapme-client-srv
+                port:
+                  number: 3000

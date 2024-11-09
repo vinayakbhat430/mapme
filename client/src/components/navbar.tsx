@@ -1,13 +1,13 @@
+"use client";
+
 import Link from "next/link";
+ 
 
-interface NavbarProps {
-  currentUser: any;
-}
-
-const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
+const Navbar = ({currentUser}:{currentUser:any}) => {
+  
   // Define the navigation links based on user authentication status
   const links = [
-    currentUser && { label: 'Sign out', href: '/auth/signout' },
+    currentUser && { label: 'Sign out', href: '/auth/logout' },
     !currentUser && { label: 'Sign in', href: '/auth/login' },
     !currentUser && { label: 'Sign up', href: '/auth/register' },
   ]

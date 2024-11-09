@@ -11,8 +11,10 @@ import MapControls from "./mapControls";
 import FeatureTooltip from "./featureTooltip";
 import FeatureSelector from "./featureSelector";
 import FeatureNameEditor from "./featureNameEditor";
+import useRequest from "@/hooks/useRequest";
+import {  eventSubject } from "@/hooks/eventSubject";
 
-const Maps: React.FC<MapsProps> = ({ token, geoJsonData }) => {
+const Maps: React.FC<MapsProps> = ({ token, geoJsonData , currentUser}) => {
   const [newPlace, setNewPlace] = useState<PlaceHolder | null>(null);
   const [hoveredFeature, setHoveredFeature] = useState<GeoJSONFeature | null>(null);
   const [roundedArea, setRoundedArea] = useState<number | null>(null);
@@ -26,6 +28,7 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData }) => {
   const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
   const [featureNames, setFeatureNames] = useState<Record<string, string>>({});
   const [newFeatureName, setNewFeatureName] = useState<string>("");
+
 
   const mapRef = useRef<MapRef | null>(null);
   const drawRef = useRef<MapboxDraw | null>(null);
@@ -52,7 +55,6 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData }) => {
 
       map.on("load", () => {
         if (geoJsonData) {
-          console.log("Adding source", geoJsonData);
           map.addSource("geojson-data", {
             type: "geojson",
             data: geoJsonData,
@@ -107,8 +109,12 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData }) => {
       drawRef.current.changeMode("direct_select", { featureId });
     }
   };
+  const {errors, doRequest}= useRequest({
+    url:'/api/anymodel',
+    method:'post',
+    onSuccess:()=> console.log("success")
+  });
 
-  // Add GeoJSON data to map when it is updated
   useEffect(() => {
     const map = mapRef.current?.getMap();
     if (map && geoJsonData) {
@@ -119,11 +125,32 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData }) => {
       map.addLayer(mapboxPolygonConfig as any);
       map.addLayer(mapboxPointConfig as any);
     }
-  }, [geoJsonData]);
+  
+    const subscription = eventSubject.subscribe((message) => {
+      // Ensure that the currentUser exists and avoid unnecessary requests
+      if (currentUser) {
+        doRequest({
+          userId: currentUser['id'],
+          modelName:message,
+          featureNames: featureNames,
+          features: drawRef.current?.getAll().features,
+        });
+      }
+    });
+  
+    // Clean up the subscription when geoJsonData changes or component unmounts
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [geoJsonData, currentUser, featureNames]);  // Add currentUser, featureNames as dependencies if needed
+  
+
+  
+
 
   return (
     <div>
-      <div style={{ width: "100vw", height: "55vh", position: "relative" }}>
+      <div style={{ width: "90vw", height: "55vh", position: "relative" }} className="flex align-center justify-center">
         <ReactMapGl
           {...viewport}
           mapboxAccessToken={token}

@@ -9,6 +9,8 @@ import { CurrentUserRouter } from "./routes/current-user";
 import { SignInRouter } from "./routes/signin";
 import { SignOutRouter } from "./routes/signout";
 import { SignUpRouter } from "./routes/signup";
+import { AnyModelRouter } from './routes/any-data';
+import { GetAnyModelRouter } from './routes/get-data';
 
 
 
@@ -28,6 +30,8 @@ app.use(SignInRouter)
 app.use(SignOutRouter)
 app.use(SignUpRouter)
 app.use(CurrentUserRouter)
+app.use(AnyModelRouter)
+app.use(GetAnyModelRouter)
 
 app.all('*',async ()=>{
     throw new NotFoundError()

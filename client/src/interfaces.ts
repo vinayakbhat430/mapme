@@ -1,6 +1,7 @@
 export interface MapsProps {
   token: string;
-  geoJsonData?: GeoJSON.FeatureCollection
+  geoJsonData?: GeoJSON.FeatureCollection,
+  currentUser?:any
 }
 
 export interface MainPageHandlerProps{

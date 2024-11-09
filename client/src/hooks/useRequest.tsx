@@ -6,13 +6,14 @@ interface RequestProps {
   method: Method;
   body?: Record<string, any>;
   onSuccess?: (data: any) => void;
+  onError?:(data:any) => void
 }
 
 interface ErrorResponse {
   message: string;
 }
 
-const useRequest = ({ url, method, body = {}, onSuccess }: RequestProps) => {
+const useRequest = ({ url, method, body = {}, onSuccess, onError }: RequestProps) => {
   const [errors, setErrors] = useState<JSX.Element | null>(null);
 
   const doRequest = async (props: Record<string, any> = {}): Promise<any> => {
@@ -32,7 +33,9 @@ const useRequest = ({ url, method, body = {}, onSuccess }: RequestProps) => {
       return response.data;
     } catch (err: any) {
       const errorMessages = err?.response?.data?.errors as ErrorResponse[] | undefined;
-
+      if(onError){
+        onError(err);
+      }
       setErrors(
         <div className="text-red-500">
           <h4>Oops....</h4>
