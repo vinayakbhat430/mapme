@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
 import { AnyModel } from "../models/anyModel";
-import { requireAuth } from "@vb430/common";
+import { CurrentUser, requireAuth } from "@vb430/common";
 
 const router = express.Router();
 
 // GET route to fetch documents by userId
-router.get("/api/anymodel", requireAuth,async (req: Request, res: Response) => {
+router.get("/api/anymodel",CurrentUser, requireAuth,async (req: Request, res: Response) => {
   
     if (!req.currentUser?.id) {
       return res.status(400).send({ error: "userId is required" });

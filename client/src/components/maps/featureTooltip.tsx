@@ -23,6 +23,10 @@ const FeatureTooltip: React.FC<FeatureTooltipProps> = ({ feature, area, position
   >
     <p><strong>ID:</strong> {feature.properties?.id}</p>
     {area && <p><strong>Area:</strong> {area} sq meters</p>}
+    { feature.geometry.type === "Point" && <div>
+        <p><strong>Longitude:</strong> { feature.geometry.coordinates[0]}</p>
+        <p><strong>Latitude:</strong> { feature.geometry.coordinates[1]}</p>
+    </div> }
     <div><strong>Name:</strong>{name[feature.properties?.id] ? name[feature.properties?.id]: <p className="text-red-500">Name not set for feature</p>}</div>
   </div>
 );

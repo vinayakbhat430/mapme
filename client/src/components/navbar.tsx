@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import DynamicDialogWithTable from "./maps/savedModels";
  
 
 const Navbar = ({currentUser}:{currentUser:any}) => {
@@ -27,10 +28,11 @@ const Navbar = ({currentUser}:{currentUser:any}) => {
       <Link href="/" className="text-2xl font-semibold text-gray-800 hover:text-blue-600">
         MapMe
       </Link>
-      <div className="flex justify-end">
+      <div className="flex justify-end space-x-6">
         <ul className="flex space-x-6 items-center">
           {links}
         </ul>
+        <DynamicDialogWithTable/>
       </div>
     </nav>
   );

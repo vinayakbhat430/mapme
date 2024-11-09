@@ -1,6 +1,9 @@
+import { point } from "@turf/turf"
+
 export const mapBoxConfig = {
     displayControlsDefault: false,
     controls: {
+      point: true,
       polygon: true,
       trash: true,
     },

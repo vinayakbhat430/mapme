@@ -73,7 +73,7 @@ const MainPageHandler: React.FC<MainPageHandlerProps> = ({ token }) => {
               onChange={e=> setModelName(e.target.value)}
               placeholder="Enter Model name"
             />
-            <Button variant="default" onClick={postData}>
+            <Button variant="default" onClick={postData} disabled={modelName === ''}>
               Save All
             </Button>
           </div>

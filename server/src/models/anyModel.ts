@@ -23,7 +23,16 @@ const anyModelSchema = new mongoose.Schema(
     },
     // Additional fields can be stored dynamically
   },
-  { strict: false } // Allows for saving flexible fields
+  {
+    toJSON:{
+        transform(doc,ret){
+            ret.id = ret._id;
+            delete ret._id;
+            delete ret.__v;
+        }
+    },
+    strict:false
+  }
 );
 
 anyModelSchema.statics.build = (attrs: AnyModelAttrs) => {
