@@ -36,3 +36,25 @@ export const mapBoxConfig = {
       },
     ],
   }
+
+
+export const mapboxPolygonConfig = {
+  id: "geojson-layer",
+  type: "fill",
+  source: "geojson-data",
+  layout: {},
+  paint: {
+    "fill-color": "#088",
+    "fill-opacity": 0.6,
+  },
+}
+
+export const mapboxPointConfig = {
+  id: "geojson-points",
+  type: "circle",
+  source: "geojson-data",
+  paint: {
+    "circle-color": "#ff0000",
+    "circle-radius": 6,
+  },
+}

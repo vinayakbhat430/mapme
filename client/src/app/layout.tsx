@@ -33,7 +33,7 @@ export default async function RootLayout({
     data = (await client.get("/api/users/current-user")).data;
     // Redirect if currentUser is not found
     if (!data.currentUser) {
-      redirect("/auth/signin"); // Redirect to login page if user is not authenticated
+      redirect("/auth/signin");
     }
   } catch (err) {}
 

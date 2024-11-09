@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useRef } from 'react';
+import React, { FC, useRef } from "react";
 
 interface FileUploadProps {
   onFileUpload: (fileContent: string | ArrayBuffer | null) => void;
@@ -46,20 +46,13 @@ const FileUpload: FC<FileUploadProps> = ({ onFileUpload }) => {
       onClick={handleClick}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      style={{
-        border: '2px dashed #ccc',
-        textAlign: 'center',
-        width: '90%',
-        margin: 'auto',
-        height: '60px',
-        marginBottom: '12px',
-      }}
+      className="border-2 border-dashed border-gray-300 text-center w-11/12 mx-auto h-16 my-3"
     >
       <input
         type="file"
         ref={fileInputRef}
         onChange={handleFileSelect}
-        style={{ display: 'none' }}
+        className="hidden"
         multiple
       />
       <p>Drag & drop GeoJSON files here, or click to select files</p>

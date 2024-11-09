@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import FileUpload from './fileUpload';
-import Maps from './maps';
+import Maps from './maps/mapsMain';
 import { MainPageHandlerProps } from '@/interfaces';
 
 const MainPageHandler:React.FC<MainPageHandlerProps> = ({token}) => {
