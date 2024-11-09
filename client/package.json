@@ -12,6 +12,7 @@
     "@hookform/resolvers": "^3.9.1",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@turf/turf": "^7.1.0",
     "@types/mapbox__mapbox-gl-draw": "^1.4.8",
