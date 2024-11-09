@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import buildClient from "@/hooks/build-client";
+import { redirect } from "next/navigation";
+import Navbar from "@/components/navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -18,19 +21,34 @@ export const metadata: Metadata = {
   description: "An App to play with maps",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const client = buildClient({});
+
+  let data;
+  try {
+    data = (await client.get("/api/users/current-user")).data;
+    // Redirect if currentUser is not found
+    if (!data.currentUser) {
+      redirect("/auth/signin"); // Redirect to login page if user is not authenticated
+    }
+  } catch (err) {}
+
   return (
     <html lang="en">
       <head>
-      <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet" />
+        <link
+          href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css"
+          rel="stylesheet"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Navbar currentUser={data?.currentUser}/>
         {children}
       </body>
     </html>

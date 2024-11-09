@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactMapGl, {
   Marker,
   NavigationControl,
@@ -17,14 +17,14 @@ import * as turf from "@turf/turf";
 import { mapBoxConfig } from "./mapbox-config";
 import { GeoJSONFeature } from "mapbox-gl";
 
-const Maps: React.FC<MapsProps> = ({ token }) => {
+const Maps: React.FC<MapsProps> = ({ token, geoJsonData }) => {
   const [newPlace, setNewPlace] = useState<PlaceHolder | null>(null);
   const [hoveredFeature, setHoveredFeature] = useState<GeoJSONFeature | null>(null);
   const [roundedArea, setRoundedArea] = useState<number | null>(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
 
   const [viewport, setViewport] = useState({
-    latitude: 13.000559116337492,
+    latitude:  13.000559116337492,
     longitude: 77.52533374173974,
     zoom: 8,
   });
@@ -51,8 +51,18 @@ const Maps: React.FC<MapsProps> = ({ token }) => {
           }
         }
       };
+      map.on("load",()=>{
+        if(geoJsonData){
+          console.log("Adding source");
+          map.addSource("geojson-data", {
+            type: "geojson",
+            data: geoJsonData,
+          });
+        }
+      })
 
       map.on("mousemove", (event) => {
+        if (!map || !drawRef.current) return;
         const features = map.queryRenderedFeatures(event.point, {
           layers: ["gl-draw-polygon-fill.cold"],
         });
@@ -79,6 +89,40 @@ const Maps: React.FC<MapsProps> = ({ token }) => {
       drawRef.current.changeMode("direct_select", { featureId });
     }
   };
+
+   // Add GeoJSON data to map when it is updated
+   useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (map && geoJsonData) {
+      console.log("Adding source",geoJsonData)
+        map.addSource("geojson-data", {
+          type: "geojson",
+          data: geoJsonData,
+        });
+        
+        map.addLayer({
+          id: "geojson-layer",
+          type: "fill",
+          source: "geojson-data",
+          layout: {},
+          paint: {
+            "fill-color": "#088",
+            "fill-opacity": 0.6,
+          },
+        });
+
+        
+        map.addLayer({
+          id: "geojson-points",
+          type: "circle",
+          source: "geojson-data",
+          paint: {
+            "circle-color": "#ff0000",
+            "circle-radius": 6,
+          },
+        });
+    }
+  }, [geoJsonData]);
 
   return (
     <div style={{ width: "100vw", height: "80vh", position: "relative" }}>

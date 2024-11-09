@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mapme-monogo-depl
+spec:
+  selector:
+    matchLabels:
+      app: mapme-mongo
+  template:
+    metadata:
+      labels:
+        app: mapme-mongo
+    spec:
+      containers:
+      - name: mapme-mongo
+        image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mapme-mongo-srv
+spec:
+  selector:
+    app: mapme-mongo
+  ports:
+  - name: db
+    protocol: TCP
+    port: 27017
+    targetPort: 27017

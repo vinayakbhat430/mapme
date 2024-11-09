@@ -1,0 +1,28 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: ticketing
+build:
+  artifacts:
+    - image: vinayakbhat430learn/mapme-backend
+      context: server
+      sync:
+        manual:
+          - dest: .
+            src: src/**/*.ts
+      docker:
+        dockerfile: Dockerfile
+    - image: vinayakbhat430learn/mapme-client
+      context: client
+      sync:
+        manual:
+          - dest: .
+            src: '**/*.ts'
+      docker:
+        dockerfile: Dockerfile
+manifests:
+  rawYaml:
+    - infra/k8s/backend-depl.yaml
+    - infra/k8s/client-depl.yaml
+    - infra/k8s/mongo-depl.yaml
+    - infra/k8s/ingress-srv.yaml
