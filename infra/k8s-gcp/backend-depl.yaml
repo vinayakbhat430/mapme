@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mapme-backend-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mapme-backend
+  template:
+    metadata:
+      labels:
+        app: mapme-backend
+    spec:
+      containers:
+      - name: mapme-backend
+        image: us.gcr.io/meet-sync-438611/mapme-server
+        resources:
+          limits:
+            memory: "2048Mi"
+            cpu: "1000m"
+        env:
+          - name: MONGO_URI
+            value: 'mongodb://mapme-mongo-srv:27017/backend'
+          - name: JWT_KEY
+            value: 'asdf'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mapme-backend-srv
+spec:
+  selector:
+    app: mapme-backend
+  ports:
+  - name: mapme-backend
+    protocol: TCP
+    port: 3000
+    targetPort: 3000

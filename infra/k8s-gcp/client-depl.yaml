@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mapme-client-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mapme-client
+  template:
+    metadata:
+      labels:
+        app: mapme-client
+    spec:
+      containers:
+      - name: mapme-client
+        image: us.gcr.io/meet-sync-438611/mapme-client
+        env:
+          - name: ACCESS_TOKEN
+            value: 'pk.eyJ1IjoidmluYXlha2JoYXQtNDMwLXNpZ251cHMiLCJhIjoiY20zNHE1cjdlMDI0NTJsc2Y5ZDZxaW9zcyJ9.nr7lz7mWqB2MTCG1JFkwog'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mapme-client-srv
+spec:
+  selector:
+    app: mapme-client
+  ports:
+  - name: mapme-client
+    protocol: TCP
+    port: 3000
+    targetPort: 3000
