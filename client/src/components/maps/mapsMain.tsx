@@ -6,9 +6,11 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import * as turf from "@turf/turf";
 import { MapsProps, PlaceHolder } from "@/interfaces";
 import {
+    generateRandomString,
   mapBoxConfig,
   mapboxPointConfig,
   mapboxPolygonConfig,
+  viewPortInitData,
 } from "./mapbox-config";
 import { GeoJSONFeature } from "mapbox-gl";
 import MapControls from "./mapControls";
@@ -23,26 +25,28 @@ import { useToast } from "@/hooks/use-toast";
 const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
   const {toast} = useToast();
   const [newPlace, setNewPlace] = useState<PlaceHolder | null>(null);
-  const [hoveredFeature, setHoveredFeature] = useState<GeoJSONFeature | null>(
-    null
-  );
+  const [hoveredFeature, setHoveredFeature] = useState<GeoJSONFeature | null>(null);
   const [roundedArea, setRoundedArea] = useState<number | null>(null);
+  const [roundedPerimeter, setRoundedPerimeter] = useState<number | null>(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
-  const [viewport, setViewport] = useState({
-    latitude: 13.000559116337492,
-    longitude: 77.52533374173974,
-    zoom: 8,
-  });
+  const [viewport, setViewport] = useState(viewPortInitData);
   const [featureIds, setFeatureIds] = useState<string[]>([]);
-  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(
-    null
-  );
+  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
   const [featureNames, setFeatureNames] = useState<Record<string, string>>({});
   const [newFeatureName, setNewFeatureName] = useState<string>("");
   const [pointId, setPointId] = useState("");
 
   const mapRef = useRef<MapRef | null>(null);
   const drawRef = useRef<MapboxDraw | null>(null);
+
+  const calculateAndSetupFeatures = () =>{
+    const allFeatures = drawRef.current?.getAll().features || [];
+        const newFeatureIds =
+          allFeatures
+            .map((feat) => feat.id?.toString())
+            .filter((id) => id !== undefined) || [];
+        setFeatureIds(newFeatureIds);
+  }
 
   const handleMapLoad = (mapInstance: MapRef) => {
     mapRef.current = mapInstance;
@@ -56,8 +60,10 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
         if (data && data.features.length > 0) {
           const selectedData = data?.features.find((feat) => feat.id === id);
           if (selectedData && selectedData.geometry.type === "Polygon") {
-            const area = turf.area(selectedData);
+            const area = turf.area(selectedData)/1000000;
+            const perimeter = turf.length(selectedData, { units: 'kilometers' });
             setRoundedArea(Math.round(area * 100) / 100);
+            setRoundedPerimeter(perimeter);
           } else {
             setRoundedArea(null);
           }
@@ -76,12 +82,7 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
       });
 
       map.on("draw.create", () => {
-        const allFeatures = drawRef.current?.getAll().features || [];
-        const newFeatureIds =
-          allFeatures
-            .map((feat) => feat.id?.toString())
-            .filter((id) => id !== undefined) || [];
-        setFeatureIds(newFeatureIds);
+        calculateAndSetupFeatures();
       });
 
       map.on("mousemove", (event) => {
@@ -142,7 +143,9 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
   };
 
   const clearAllLayers = () => {
-    window.location.reload()
+    if(drawRef){
+        drawRef.current?.deleteAll()
+    }
   };
   
   const { errors, doRequest } = useRequest({
@@ -153,25 +156,13 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
         description:'Saved model data'
     }),
   });
-  function generateRandomString(length:number) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-  }
-
+  
   useEffect(()=>{
     const map = mapRef.current?.getMap();
-    if (map && geoJsonData) {
+    if (map && geoJsonData && drawRef) {
       const layerId = generateRandomString(10);
-      map.addSource(layerId, {
-        type: "geojson",
-        data: geoJsonData,
-      });
-      map.addLayer(mapboxPolygonConfig(`${layerId}1`, layerId) as any);
-      map.addLayer(mapboxPointConfig(`${layerId}2`, layerId) as any);
+      drawRef.current?.add(geoJsonData);
+      calculateAndSetupFeatures();
     }
   },[geoJsonData])
 
@@ -239,6 +230,7 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
             <FeatureTooltip
               feature={hoveredFeature}
               area={roundedArea}
+              perimeter={roundedPerimeter}
               position={hoverPosition}
               name={featureNames}
             />

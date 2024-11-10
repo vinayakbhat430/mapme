@@ -1,3 +1,9 @@
+export const viewPortInitData = {
+  latitude: 13.000559116337492,
+  longitude: 77.52533374173974,
+  zoom: 8,
+}
+
 export const mapBoxConfig = {
   displayControlsDefault: false,
   controls: {
@@ -62,3 +68,13 @@ export const mapboxPointConfig = (id?: string, source?:string) => {
     },
   };
 };
+
+export  function generateRandomString(length:number) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+

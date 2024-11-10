@@ -3,11 +3,12 @@ import { GeoJSONFeature } from "mapbox-gl";
 interface FeatureTooltipProps {
   feature: GeoJSONFeature;
   area: number | null;
+  perimeter: number | null;
   position: { x: number; y: number };
   name:Record<string,string>;
 }
 
-const FeatureTooltip: React.FC<FeatureTooltipProps> = ({ feature, area, position,name }) => (
+const FeatureTooltip: React.FC<FeatureTooltipProps> = ({ feature, area,perimeter, position,name }) => (
   <div
     style={{
       position: "absolute",
@@ -22,7 +23,8 @@ const FeatureTooltip: React.FC<FeatureTooltipProps> = ({ feature, area, position
     }}
   >
     <p><strong>ID:</strong> {feature.properties?.id || feature.id}</p>
-    {area && <p><strong>Area:</strong> {area} sq meters</p>}
+    {area && <p><strong>Area:</strong> {area} sq Km</p>}
+    {perimeter && <p><strong>Permeter:</strong> {perimeter} Km</p>}
     { feature.geometry.type === "Point" && <div>
         <p><strong>Longitude:</strong> { feature.geometry.coordinates[0]}</p>
         <p><strong>Latitude:</strong> { feature.geometry.coordinates[1]}</p>
