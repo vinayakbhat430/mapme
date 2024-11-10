@@ -21,7 +21,7 @@ const FeatureTooltip: React.FC<FeatureTooltipProps> = ({ feature, area, position
       zIndex: 1000,
     }}
   >
-    <p><strong>ID:</strong> {feature.properties?.id}</p>
+    <p><strong>ID:</strong> {feature.properties?.id || feature.id}</p>
     {area && <p><strong>Area:</strong> {area} sq meters</p>}
     { feature.geometry.type === "Point" && <div>
         <p><strong>Longitude:</strong> { feature.geometry.coordinates[0]}</p>
