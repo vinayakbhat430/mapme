@@ -1,4 +1,5 @@
-import {  useEffect, useState } from "react";
+"use client";
+import {  useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -6,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogClose,
 } from "../ui/dialog";
 // import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../ui/table";
 import { Button } from "../ui/button";
@@ -34,10 +34,6 @@ const DynamicDialogWithTable = () => {
     onSuccess: (d) => setTableData(d),
   });
 
-  useEffect(() => {
-    doRequest();
-  }, []);
-
   const handleSelectChange = (selectedOption: string) => {
     setSelectedOption(e=> selectedOption);
   };
@@ -55,8 +51,10 @@ const DynamicDialogWithTable = () => {
 
 
   const handleClick = () =>{
-    doRequest();
     setOpen(e=> !e)
+    if(open){
+      doRequest();
+    }
   }
 
   return (
