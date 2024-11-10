@@ -53,10 +53,16 @@ const DynamicDialogWithTable = () => {
     });
   }
 
+
+  const handleClick = () =>{
+    doRequest();
+    setOpen(e=> !e)
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={"secondary"} onClick={() => setOpen(e=> !e)}>Show Saved Models</Button>
+        <Button variant={"secondary"} onClick={handleClick}>Show Saved Models</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

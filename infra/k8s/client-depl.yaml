@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: mapme-client
-        image: vinayakbhat430learn/mapme-client
+        image: vinayakbhat430learn/mapme-multi-client
         env:
           - name: ACCESS_TOKEN
             value: 'pk.eyJ1IjoidmluYXlha2JoYXQtNDMwLXNpZ251cHMiLCJhIjoiY20zNHE1cjdlMDI0NTJsc2Y5ZDZxaW9zcyJ9.nr7lz7mWqB2MTCG1JFkwog'
