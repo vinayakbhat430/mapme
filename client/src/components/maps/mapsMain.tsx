@@ -17,8 +17,11 @@ import FeatureSelector from "./featureSelector";
 import FeatureNameEditor from "./featureNameEditor";
 import useRequest from "@/hooks/useRequest";
 import { eventSubject } from "@/hooks/eventSubject";
+import { Button } from "../ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
+  const {toast} = useToast();
   const [newPlace, setNewPlace] = useState<PlaceHolder | null>(null);
   const [hoveredFeature, setHoveredFeature] = useState<GeoJSONFeature | null>(
     null
@@ -67,8 +70,8 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
             type: "geojson",
             data: geoJsonData,
           });
-          map.addLayer(mapboxPolygonConfig as any);
-          map.addLayer(mapboxPointConfig as any);
+          map.addLayer(mapboxPolygonConfig() as any);
+          map.addLayer(mapboxPointConfig() as any);
         }
       });
 
@@ -90,9 +93,7 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
           console.warn("Layer 'gl-draw-polygon-fill.cold' does not exist");
           return; // Exit the function if the layer is not found
         }
-        const features = map.queryRenderedFeatures(event.point, {
-          layers: ["gl-draw-polygon-fill.cold", "gl-draw-point.cold"],
-        });
+        const features = map.queryRenderedFeatures(event.point);
         if (features.length > 0) {
           const featureId = features[0].properties?.id;
           featureId && updateArea(featureId);
@@ -122,6 +123,10 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
         ...prev,
         [selectedFeatureId]: newFeatureName,
       }));
+      toast({
+        title:'Name updated successfully',
+        duration: 3000
+    })
     }
   };
 
@@ -136,28 +141,54 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
     }
   };
 
+  const clearAllLayers = () => {
+    window.location.reload()
+  };
+  
   const { errors, doRequest } = useRequest({
     url: "/api/anymodel",
     method: "post",
-    onSuccess: () => console.log("success"),
+    onSuccess: () =>toast({
+        title:'Data Saved successfully!',
+        description:'Saved model data'
+    }),
   });
+  function generateRandomString(length:number) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  }
 
-  useEffect(() => {
+  useEffect(()=>{
     const map = mapRef.current?.getMap();
     if (map && geoJsonData) {
-      map.addSource("geojson-data", {
+      const layerId = generateRandomString(10);
+      map.addSource(layerId, {
         type: "geojson",
         data: geoJsonData,
       });
+      map.addLayer(mapboxPolygonConfig(`${layerId}1`, layerId) as any);
+      map.addLayer(mapboxPointConfig(`${layerId}2`, layerId) as any);
     }
+  },[geoJsonData])
 
+  useEffect(() => {
     const subscription = eventSubject.subscribe((message) => {
       if (currentUser) {
+
+        const features = drawRef.current?.getAll().features
+        const featuresPayload = {
+            "type": "FeatureCollection",
+            "features":features?.map(d=> ({...d, properties:{ name:featureNames[d.id!]}}))
+        }
         doRequest({
           userId: currentUser["id"],
           modelName: message,
           featureNames: featureNames,
-          features: drawRef.current?.getAll().features,
+          features: featuresPayload,
         });
       }
     });
@@ -165,7 +196,7 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [geoJsonData, currentUser, featureNames]);
+  }, [ currentUser, featureNames]);
 
   return (
     <div>
@@ -198,6 +229,12 @@ const Maps: React.FC<MapsProps> = ({ token, geoJsonData, currentUser }) => {
             }
             return null;
           })}
+          <Button
+          className="absolute top-0 left-0 z-1000 bg-red-500 text-white py-2 px-4 rounded"
+          onClick={clearAllLayers}
+        >
+          Clear All Layers
+        </Button>
           {hoveredFeature && (
             <FeatureTooltip
               feature={hoveredFeature}

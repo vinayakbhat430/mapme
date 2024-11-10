@@ -1,4 +1,4 @@
-import { Key, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogClose,
 } from "../ui/dialog";
 // import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../ui/table";
 import { Button } from "../ui/button";
@@ -16,11 +17,16 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@radix-ui/react-select";
+} from "../ui/select";
+import { selectedModel } from "@/hooks/eventSubject";
+import { useToast } from "@/hooks/use-toast";
 
 const DynamicDialogWithTable = () => {
+  const {toast} = useToast()
   // Sample data array to dynamically populate the rows
+  const [selectedOption, setSelectedOption] = useState('');
   const [tableData, setTableData] = useState<any>([]);
+  const [open,setOpen] = useState<boolean>(false);
 
   const { errors, doRequest } = useRequest({
     url: "/api/anymodel",
@@ -32,48 +38,45 @@ const DynamicDialogWithTable = () => {
     doRequest();
   }, []);
 
-  const handleSelectChange = (selectedOption: string) => {};
+  const handleSelectChange = (selectedOption: string) => {
+    setSelectedOption(e=> selectedOption);
+  };
+
+  const loadModel = () =>{
+    const findSelected = tableData.find((d: { id: string; })=> d.id === selectedOption)
+    if(findSelected){
+        const subscription = selectedModel.next(findSelected)
+    }
+    setOpen(false);
+    toast({
+        title:'Map Loaded successfully'
+    });
+  }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={"secondary"}>Show Saved Models</Button>
+        <Button variant={"secondary"} onClick={() => setOpen(e=> !e)}>Show Saved Models</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Saved Models</DialogTitle>
+          <DialogDescription>List of all models saved previously!</DialogDescription>
         </DialogHeader>
-
-        {/* <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {tableData.length ? tableData.map((row:any) => (
-              <TableRow key={row?.feature?.id}>
-                <TableCell>{row.propreties?.modelName || row.features.id}</TableCell>
-                <TableCell>
-                  <Button>Load</Button>
-                </TableCell>
-              </TableRow>
-            )):<TableCell className="text-red-500 text-3xl">No Data found</TableCell>}
-          </TableBody>
-        </Table> */}
         <Select onValueChange={handleSelectChange}>
           <SelectTrigger>
             <SelectValue placeholder="Select Feature" />
           </SelectTrigger>
-          <SelectContent>
-            {tableData.map((data: { id: string; name: any }) => (
-              <SelectItem value={data.id} key={data.id}>
-                Feature {data.name || data.id}
+          <SelectContent className="relative">
+            {tableData.map((data: { id: string; modelName: any }) => (
+              <SelectItem value={data.id.toString()} key={data.id}>
+                {data.modelName || data.id}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+        <Button onClick={loadModel}>Load</Button>
+        <Button onClick={e=>setOpen(false)} variant={'destructive'}>Close</Button>
       </DialogContent>
     </Dialog>
   );
