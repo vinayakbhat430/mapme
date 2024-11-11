@@ -1,5 +1,5 @@
 "use client";
-import {  useState } from "react";
+import {  useEffect, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -48,6 +48,10 @@ const DynamicDialogWithTable = () => {
         title:'Map Loaded successfully'
     });
   }
+
+  useEffect(()=>{
+    doRequest()
+  },[open])
 
 
   const handleClick = () =>{

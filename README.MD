@@ -56,3 +56,21 @@ go to browser and enter
 https://meet-sync.dev
 
 If you encounter any warning Just follow this [Reference](https://stackoverflow.com/questions/35274659/when-you-use-badidea-or-thisisunsafe-to-bypass-a-chrome-certificate-hsts-err)
+
+
+
+## Glimpse of application
+
+- Login Page
+  [Login Page](./images/Loginscreen.png)
+
+- Register Page
+  [Register page](./images/Registerscreen.png)
+
+- Map Screens
+  [Map Scren 1](./images/Mainmapscreen.png)
+  [Map Screen 2](./images/mapWithFeatures.png)
+
+- Load data Screens
+  [Load Data 1](./images/Loaddata1.png)
+  [Load Data 2](./images/loaddata2.png)
