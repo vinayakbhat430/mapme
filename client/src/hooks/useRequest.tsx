@@ -24,6 +24,7 @@ const useRequest = ({ url, method, body = {}, onSuccess, onError }: RequestProps
         url,
         method,
         data: { ...body, ...props },
+        withCredentials:true
       });
 
       if (onSuccess) {
