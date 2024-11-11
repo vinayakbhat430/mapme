@@ -24,7 +24,7 @@ const FeatureTooltip: React.FC<FeatureTooltipProps> = ({ feature, area,perimeter
   >
     <p><strong>ID:</strong> {feature.properties?.id || feature.id}</p>
     {area && <p><strong>Area:</strong> {area} sq Km</p>}
-    {perimeter && <p><strong>Permeter:</strong> {perimeter} Km</p>}
+    {feature.geometry.type !== "Point" &&  perimeter && <p><strong>Permeter:</strong> {perimeter} Km</p>}
     { feature.geometry.type === "Point" && <div>
         <p><strong>Longitude:</strong> { feature.geometry.coordinates[0]}</p>
         <p><strong>Latitude:</strong> { feature.geometry.coordinates[1]}</p>
