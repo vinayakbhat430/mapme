@@ -62,15 +62,15 @@ If you encounter any warning Just follow this [Reference](https://stackoverflow.
 ## Glimpse of application
 
 - Login Page
-  [Login Page](./images/Loginscreen.png)
+  ![Login Page](./images/Loginscreen.png)
 
 - Register Page
-  [Register page](./images/Registerscreen.png)
+  ![Register page](./images/Registerscreen.png)
 
 - Map Screens
-  [Map Scren 1](./images/Mainmapscreen.png)
-  [Map Screen 2](./images/mapWithFeatures.png)
+  ![Map Scren 1](./images/Mainmapscreen.png)
+  ![Map Screen 2](./images/mapWithFeatures.png)
 
 - Load data Screens
-  [Load Data 1](./images/Loaddata1.png)
-  [Load Data 2](./images/loaddata2.png)
+  ![Load Data 1](./images/Loaddata1.png)
+  ![Load Data 2](./images/loaddata2.png)
